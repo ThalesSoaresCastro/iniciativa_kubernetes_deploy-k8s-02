@@ -15,7 +15,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PWD }}
 
-      - name: Docbker Build and Push
+      - name: Docker Build and Push
         uses: docker/build-push-action@v2.7.0
         with:
           context: ./src
