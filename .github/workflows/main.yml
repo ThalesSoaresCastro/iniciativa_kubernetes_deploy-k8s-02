@@ -4,7 +4,7 @@ on:
     branches: [ main ]
   workflow_dispatch:
 jobs:
-  build:
+  CI:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -25,3 +25,21 @@ jobs:
             typhanael/rotten-potatoes:latest
             typhanael/rotten-potatoes:${{ github.run_number }}
             
+  CD:
+    needs: [CI]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Kubernetes Set Context
+        uses: Azure/k8s-set-context@v2
+        with:
+            method: kubeconfig
+            kubeconfig: ${{ secret.K8S_CONFIG }}
+
+      - name: Deploy to Kubernetes cluster
+        uses: Azure/k8s-deploy@v1.5
+        with:
+          images: typhanael/rotten-potatoes:${{ github.run_number }}
+          manifests: |
+            kubernetes/deployment.yaml
